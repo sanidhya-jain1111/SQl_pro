@@ -1,0 +1,262 @@
+select * from companies_details;
+describe companies_details;
+#1 Top 10 companies according to the market cap
+SELECT 
+    Company_name,
+    Ticker,
+    MarketCap_March31_M
+FROM 
+    companies_details
+ORDER BY 
+    MarketCap_March31_M DESC
+LIMIT 10;
+
+#2 Average number of the employees by sector wise
+SELECT 
+    Sector,
+    AVG(Number_of_employees) AS Average_Employees
+FROM 
+    companies_details
+GROUP BY 
+    Sector;
+    
+#3total profits of the companies in the one country
+SELECT 
+    Country,
+    SUM(Profits_M) AS Total_Profits
+FROM 
+    companies_details
+GROUP BY 
+    Country;
+ 
+ #4 top 10 companies according to the change in the revenue percentage 
+SELECT 
+    Company_name,
+    Revenues_M,
+    RevenuePercentChange
+FROM 
+    companies_details
+ORDER BY 
+    RevenuePercentChange DESC
+LIMIT 10;
+
+
+#5 companies with the Female ceo
+SELECT 
+    Company_name,
+    CEO
+FROM 
+    companies_details
+WHERE 
+    FemaleCEO = 'Yes';
+
+#6 sector wise count of profitable companies
+    SELECT 
+    Sector,
+    COUNT(*) AS Number_of_Profitable_Companies
+FROM 
+    companies_details
+WHERE 
+    Profitable = 'Yes'
+GROUP BY 
+    Sector
+ORDER BY 
+    Number_of_Profitable_Companies DESC;
+
+
+#7  companies with the involvement in fortune500 and global500  
+    SELECT 
+    Company_name
+FROM 
+    companies_details
+WHERE 
+    Newcomer_to_the_Fortune500 = 'Yes'
+    AND Global500 = 'Yes';
+ 
+ #8Industry wise total assets and average revenue percent change
+    SELECT 
+    Industry,
+    SUM(Assets_M) AS Total_Assets,
+    AVG(RevenuePercentChange) AS Average_Revenue_Percent_Change
+FROM 
+    companies_details
+GROUP BY 
+    Industry;
+
+#9 companies with the headquater in the california with the company name and headquatercity
+    SELECT 
+    Company_name,
+    HeadquartersCity,
+    HeadquartersState
+FROM 
+    companies_details
+WHERE 
+    HeadquartersState = 'California';
+
+#10 top 10 with the number of growth in the jobs
+    SELECT 
+    Company_name,
+    Growth_in_Jobs
+FROM 
+    companies_details
+ORDER BY 
+    Growth_in_Jobs DESC
+LIMIT 10;
+
+#11 companies with the bothe founder is ceo and female is ceo
+SELECT 
+    Company_name,
+    CEO
+FROM 
+    companies_details
+WHERE 
+    Founder_is_CEO = 'Yes'
+    AND FemaleCEO = 'Yes';
+ 
+ #12top 5 companies with the highest profits in descending order
+    SELECT 
+    Company_name,
+    Profits_M
+FROM 
+    companies_details
+ORDER BY 
+    Profits_M DESC
+LIMIT 5;
+
+#13 Average number employees in the fortune500 companies
+SELECT 
+    AVG(Number_of_employees) AS Average_Employees_Fortune500
+FROM 
+    companies_details
+WHERE 
+    Newcomer_to_the_Fortune500 = 'Yes';
+
+#14 the name of the companies with the tag of the best companies
+    SELECT 
+    Company_name
+FROM 
+    companies_details
+WHERE 
+    Profitable = 'Yes'
+    AND Best_Companies = 'Yes';
+ 
+ #15 the companies with the change in the rank
+    SELECT 
+    Company_name,
+    Change_in_Rank
+FROM 
+    companies_details
+WHERE 
+    ABS(Change_in_Rank) > 10;
+
+
+#16 companies with the revenuepercentchange or profitpercentchange is greater 50.
+    SELECT 
+    Company_name,
+    RevenuePercentChange,
+    ProfitsPercentChange
+FROM 
+    companies_details
+WHERE 
+    ABS(RevenuePercentChange) > 50
+    OR ABS(ProfitsPercentChange) > 50;
+ 
+ #17 sector with the average marketcap with the headquater in new york
+    SELECT 
+    Sector,
+    AVG(MarketCap_March31_M) AS Avg_MarketCap_By_Sector
+FROM 
+    companies_details
+WHERE 
+    HeadquartersState = 'New York'
+GROUP BY 
+    Sector;
+    
+  #18  sector by total assets and total profits
+    SELECT 
+    Sector,
+    SUM(Assets_M) AS Total_Assets,
+    SUM(Profits_M) AS Total_Profits
+FROM 
+    companies_details
+GROUP BY 
+    Sector;
+
+#19 comanies with profits greater than average profit of all the companies
+SELECT 
+    Company_name,
+    Profits_M
+FROM 
+    companies_details cd
+WHERE 
+    Profits_M > (
+        SELECT 
+            AVG(Profits_M)
+        FROM 
+            companies_details
+        WHERE 
+            Industry = cd.Industry
+    );
+
+#20  companies with market cap which is greater the the average market cap of the all the companies
+SELECT 
+    Company_name,
+    MarketCap_March31_M
+FROM 
+    companies_details
+WHERE 
+    MarketCap_March31_M > (
+        SELECT 
+            AVG(MarketCap_March31_M)
+        FROM 
+            (SELECT 
+                MarketCap_March31_M,
+                NTILE(2) OVER (ORDER BY MarketCap_March31_M) AS Quartile
+            FROM 
+                companies_details) AS Quartiles
+        WHERE 
+            Quartile = 2
+    );
+
+#21 sector by the female percentege ceo of the all companies
+    SELECT 
+    Sector,
+    (COUNT(*) / (SELECT COUNT(*) FROM companies_details WHERE Sector = cd.Sector)) * 100 AS Percentage_Female_CEOs
+FROM 
+    companies_details cd
+WHERE 
+    FemaleCEO = 'Yes'
+GROUP BY 
+    Sector;
+
+#22 companies wise profit margin 
+    SELECT 
+    Company_name,
+    (Profits_M / Revenues_M) AS Profit_Margin
+FROM 
+    companies_details
+ORDER BY 
+    Profit_Margin DESC
+LIMIT 10;
+
+#23 companies  with the headquater and revenue whose revenue is greater the the average revenue.
+SELECT 
+    Company_name,
+    HeadquartersCity,
+    Revenues_M
+FROM 
+    companies_details cd
+WHERE 
+    Revenues_M > (
+        SELECT 
+            AVG(Revenues_M)
+        FROM 
+            companies_details
+    );
+
+
+
+
+
+
+
